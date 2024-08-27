@@ -34,7 +34,7 @@ jobs:
 
     - name: Create Target Directory
       run: |
-        ssh -o StrictHostKeyChecking=no ec2-user@13.210.154.160 "mkdir -p /var/www/hybrid-practice/dist"
+        ssh -o StrictHostKeyChecking=no ec2-user@13.210.154.160 "sudo mkdir -p /var/www/hybrid-practice/dist"
 
     - name: Deploy Static Files
       run: |
