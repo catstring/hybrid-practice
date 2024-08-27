@@ -10,7 +10,6 @@ env:
   SERVER_IP: 13.210.154.160
   PROJECT_NAME: hybrid-practice
   PROJECT_DIR: /var/www/${PROJECT_NAME}
-  DIST_DIR: ${PROJECT_DIR}/dist
 
 jobs:
   build-and-deploy:
@@ -42,7 +41,7 @@ jobs:
     - name: Prepare Target Directory
       run: |
         ssh -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_IP }} "
-          sudo mkdir -p ${{ env.DIST_DIR }} &&
+          sudo mkdir -p ${{ env.PROJECT_NAME }}/dist &&
           sudo chown -R ${{ env.SERVER_USER }}:${{ env.SERVER_USER }} ${{ env.PROJECT_DIR }}
         "
 
