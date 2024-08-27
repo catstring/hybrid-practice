@@ -5,68 +5,35 @@ on:
     branches:
       - main
 
-env:
-  PROJECT_DIR: "/var/www"
-  PROJECT_NAME: "hybrid-practice"
-  REPO_URL: "https://github.com/catstring/hybrid-practice.git"
-
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
-    
-    - name: Install Node.js
+
+    - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '18'
-      
+
     - name: Install Dependencies
       run: npm install
-      
+
     - name: Run Tests
       run: npm test
-    
+
     - name: Build Project
       run: npm run build
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
     - name: Set up SSH
       uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.EC2_NEWKEY }}
 
-    - name: Deploy to EC2
+    - name: Deploy Static Files
       run: |
-        ssh -o StrictHostKeyChecking=no ec2-user@13.210.154.160 << EOF
-          set -e  # Exit immediately if a command exits with a non-zero status
-          trap 'echo "Error occurred on line $LINENO"' ERR  # Print error message with line number
-          
-          sudo chown -R ec2-user:ec2-user ${PROJECT_DIR}
-          cd ${PROJECT_DIR}
-
-          # Check if the directory exists
-          if [ ! -d "${PROJECT_NAME}" ]; then
-            # Directory does not exist, clone the repository
-            sudo git clone ${REPO_URL}
-            sudo chown -R ec2-user:ec2-user ${PROJECT_NAME}
-            cd ${PROJECT_NAME}
-          else
-            # Directory exists, pull the latest changes
-            cd ${PROJECT_NAME}
-            git pull || { echo 'git pull failed'; exit 1; }
-          fi
-          
-          npm install || { echo 'npm install failed'; exit 1; }
-          npm run build || { echo 'npm run build failed'; exit 1; }
-
-          sudo chown -R nginx:nginx ${PROJECT_DIR}
-
-          # Clean up temporary files (if necessary)
-          sudo rm -rf /tmp/*
-        EOF
+        rsync -avz --delete-after \
+        --exclude '.git' \
+        ./dist/ ec2-user@13.210.154.160:/var/www/hybrid-practice/dist/
