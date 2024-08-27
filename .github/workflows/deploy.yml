@@ -32,6 +32,10 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.EC2_NEWKEY }}
 
+    - name: Create Target Directory
+      run: |
+        ssh -o StrictHostKeyChecking=no ec2-user@13.210.154.160 "mkdir -p /var/www/hybrid-practice/dist"
+
     - name: Deploy Static Files
       run: |
         rsync -avz --delete-after \
