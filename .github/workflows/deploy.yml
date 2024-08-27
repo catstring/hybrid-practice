@@ -35,5 +35,6 @@ jobs:
     - name: Deploy Static Files
       run: |
         rsync -avz --delete-after \
+        -e "ssh -o StrictHostKeyChecking=no" \
         --exclude '.git' \
         ./dist/ ec2-user@13.210.154.160:/var/www/hybrid-practice/dist/
