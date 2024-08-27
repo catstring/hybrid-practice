@@ -5,12 +5,6 @@ on:
     branches:
       - main
 
-env:
-  SERVER_USER: ec2-user
-  SERVER_IP: 13.210.154.160
-  PROJECT_NAME: hybrid-practice
-  PROJECT_BASE_DIR: /var/www
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -40,9 +34,9 @@ jobs:
 
     - name: Prepare Target Directory
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_IP }} "
-          sudo mkdir -p ${{ env.PROJECT_BASE_DIR }}/${{ env.PROJECT_NAME }}/dist &&
-          sudo chown -R ${{ env.SERVER_USER }}:${{ env.SERVER_USER }} ${{ env.PROJECT_BASE_DIR }}/${{ env.PROJECT_NAME }}
+        ssh -o StrictHostKeyChecking=no ec2-user@13.210.154.160 "
+          sudo mkdir -p /var/www/hybrid-practice/dist &&
+          sudo chown -R ec2-user:ec2-user /var/www/hybrid-practice
         "
 
     - name: Deploy Static Files
@@ -50,10 +44,10 @@ jobs:
         rsync -avz --delete-after \
         -e "ssh -o StrictHostKeyChecking=no" \
         --exclude '.git' \
-        ./dist/ ${{ env.SERVER_USER }}@${{ env.SERVER_IP }}:${{ env.PROJECT_BASE_DIR }}/${{ env.PROJECT_NAME }}/dist/
+        ./dist/ ec2-user@13.210.154.160:/var/www/hybrid-practice/dist/
 
     - name: Change Ownership to Nginx
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_IP }} "
-          sudo chown -R nginx:nginx ${{ env.PROJECT_BASE_DIR }}/${{ env.PROJECT_NAME }}
+        ssh -o StrictHostKeyChecking=no ec2-user@13.210.154.160 "
+          sudo chown -R nginx:nginx /var/www/hybrid-practice
         "
