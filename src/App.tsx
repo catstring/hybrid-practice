@@ -1,16 +1,32 @@
 import React, { useState } from 'react';
-import { increment, decrement } from './logic/counterLogic';
+// import { increment, decrement } from './logic/counterLogic';
+import Counter from './classes/Counter';
 import { double, isEven } from './utils/utils';
 
 const App: React.FC = () => {
-  const [count, setCount] = useState(0);
+
+  // FP
+  // const [count, setCount] = useState(0);
+
+  // const handleIncrement = () => {
+  //   setCount(prevCount => increment(prevCount));
+  // };
+
+  // const handleDecrement = () => {
+  //   setCount(prevCount => decrement(prevCount));
+  // };
+
+
+  // OOP
+  const [counter] = useState(new Counter(0));
+  const [count, setCount] = useState(counter.getCount());
 
   const handleIncrement = () => {
-    setCount(prevCount => increment(prevCount));
+    setCount(counter.increment());
   };
 
   const handleDecrement = () => {
-    setCount(prevCount => decrement(prevCount));
+    setCount(counter.decrement());
   };
 
   return (
