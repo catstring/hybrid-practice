@@ -6,6 +6,7 @@ on:
       - main
 
 env:
+  SSH_PRIVATE_KEY: ${{ secrets.EC2_NEWKEY }}
   SERVER_USER: ec2-user
   SERVER_IP: 13.210.154.160
   PROJECT_NAME: hybrid-practice
@@ -36,7 +37,7 @@ jobs:
     - name: Set up SSH
       uses: webfactory/ssh-agent@v0.5.3
       with:
-        ssh-private-key: ${{ secrets.EC2_NEWKEY }}
+        ssh-private-key: ${{ env.secrets.EC2_NEWKEY }}
 
     - name: Prepare Target Directory
       run: |
